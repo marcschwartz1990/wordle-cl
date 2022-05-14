@@ -9,11 +9,18 @@ Open a terminal from your destination folder:
 ```commandline
 git clone git@github.com:marcschwartz1990/wordle-cl.git
 ```
+
+Navigate into wordle-cl directory:
+
+```commandline
+cd wordle-cl
+```
 Install requirements via pip:
 
 ```commandline
 python3 -m pip install -r requirements.txt
 ```
+
 
 Run wordle_main.py:
 ```
