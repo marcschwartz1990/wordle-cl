@@ -180,7 +180,7 @@ def main():
         display_remaining_letters(guess, answer, letters_remaining)
 
         solution = check_for_solution(guess, answer)
-        if solution == True:
+        if solution:
             break
 
     # Decide whether puzzle is solved or not
