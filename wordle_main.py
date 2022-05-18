@@ -16,6 +16,7 @@ class InvalidWordException(Exception):
 class WordleGame:
     squares = []
     rows = [None] * 6
+    player_name = None
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
@@ -37,8 +38,10 @@ class WordleGame:
 
         self.display_welcome_message()
         self.display_instructions()
+        self.player_name = input('Enter your name: ')
 
         for i in range(6):
+            print(answer)
             while True:
                 guess = input('Enter a 5-letter word: ').lower()
                 try:
@@ -66,6 +69,10 @@ class WordleGame:
             print(
                 f'\nThe correct word was: {colored(answer.upper(), "green")}\n\nSorry, you failed to guess in 6 tries.')
         print('GAME OVER')
+
+    def record_stats(self):
+        with open('wordle-stats.txt', 'a') as f:
+            f.write(f'\n{self.player_name} played this game.')
 
     def reset_squares(self):
         self.squares = []
@@ -105,6 +112,7 @@ def main():
     game = WordleGame()
     while True:
         game.run_game()
+        game.record_stats()
         if replay_prompt() is False:
             break
         game.reset_squares()
