@@ -138,15 +138,6 @@ def replay_prompt():
     return False
 
 
-def set_mode(game, mode):
-    if mode == 'normal':
-        return
-    elif mode == 'easy':
-        game.easy_mode()
-    elif mode == 'difficult':
-        game.difficult_mode()
-
-
 def import_word_list(source_list):
     """imports word list from source_list and stores it in a python list"""
     with open(source_list, 'r') as file:
@@ -190,3 +181,32 @@ if __name__ == '__main__':
     possible_answers = import_word_list('wordle-answers-alphabetical.txt')
     possible_guesses = import_word_list('wordle-allowed-guesses.txt')
     main()
+
+# Move to new branch to work on mode feature:
+
+# def easy_mode(self):
+#     """Set number of allowed guesses to 8"""
+#     self.rows = [None] * 8
+#     self.guesses = 8
+#
+# def difficult_mode(self):
+#     """Set number of allowed guesses to 4"""
+#     self.rows = [None] * 4
+#     self.guesses = 4
+#
+# while True:
+#     modes = list(('easy', 'normal', 'difficult'))
+#     mode = input('Choose a mode (easy, normal, difficult): ').lower()
+#     if mode not in modes:
+#         continue
+#     else:
+#         break
+# set_mode(self, mode)
+
+# def set_mode(game, mode):
+#     if mode == 'normal':
+#         return
+#     elif mode == 'easy':
+#         game.easy_mode()
+#     elif mode == 'difficult':
+#         game.difficult_mode()
