@@ -1,4 +1,5 @@
 import random
+import string
 import time
 from termcolor import colored
 
@@ -14,9 +15,12 @@ class InvalidWordException(Exception):
 
 
 class WordleGame:
+    # Default global variables, altered by 'mode' functions.
     squares = []
     rows = [None] * 6
     player_name = None
+    guesses = 6
+    letters_remaining = set(sorted(string.ascii_lowercase))
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
@@ -24,51 +28,10 @@ class WordleGame:
 
     def display_board(self):
         for row in self.rows:
-            if row is not None:
+            if row:
                 print(row)
             else:
                 print('[ ][ ][ ][ ][ ]')
-
-    def run_game(self):
-
-        answer = random.choice(possible_answers)
-        letters_remaining = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                             'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-                             ]
-
-        self.display_welcome_message()
-        self.display_instructions()
-        self.player_name = input('Enter your name: ')
-
-        for i in range(6):
-            print(answer)
-            while True:
-                guess = input('Enter a 5-letter word: ').lower()
-                try:
-                    validate_user_guess(guess)
-                    break
-                except GuessLengthException:
-                    print('Word must be 5 letters')
-                except InvalidWordException:
-                    print('Invalid guess')
-
-            for letter in generate_row(guess, answer):
-                self.squares.append(letter)
-
-            self.rows[i] = self.create_row()
-            self.display_board()
-            display_remaining_letters(guess, answer, letters_remaining)
-            self.reset_squares()
-
-            if guess == answer:
-                break
-
-        if guess == answer:
-            print(f'\nCongratulations! You guessed the word: {colored(answer.upper(), "green")}')
-        else:
-            print(
-                f'\nThe correct word was: {colored(answer.upper(), "green")}\n\nSorry, you failed to guess in 6 tries.')
-        print('GAME OVER')
 
     def record_stats(self):
         with open('wordle-stats.txt', 'a') as f:
@@ -107,6 +70,54 @@ class WordleGame:
             else:
                 print('Invalid input.')
 
+    def adjust_remaining_letters(self, user_guess, answer):
+        for char in user_guess:
+            if char not in answer and char in self.letters_remaining:
+                self.letters_remaining.remove(char)
+        return ' '.join(sorted(self.letters_remaining))
+
+    def display_remaining_letters(self):
+        print(f'\nLetters Remaining ({len(self.letters_remaining)}): {self.letters_remaining}')
+
+    def run_game(self):
+        self.display_welcome_message()
+        self.display_instructions()
+        self.player_name = input('Enter your name: ')
+
+        answer = random.choice(possible_answers)
+
+        for i in range(self.guesses):
+            while True:
+                guess = input('Enter a 5-letter word: ').lower()
+                try:
+                    validate_user_guess(guess)
+                    break
+                except GuessLengthException:
+                    print('Word must be 5 letters')
+                except InvalidWordException:
+                    print('Invalid guess')
+
+            for letter in generate_row(guess, answer):
+                self.squares.append(letter)
+
+            self.rows[i] = self.create_row()
+            self.display_board()
+            self.remaining_letters = self.adjust_remaining_letters(guess, answer)
+            self.display_remaining_letters()
+            self.reset_squares()
+
+            if guess == answer:
+                break
+
+        if guess == answer:
+            print(f'\nCongratulations! You guessed the word: {colored(answer.upper(), "green")}')
+        else:
+            print(
+                f'\nThe correct word was: {colored(answer.upper(), "green")}\n'
+                f'\nSorry, you failed to guess in 6 tries.'
+            )
+        print('GAME OVER')
+
 
 def main():
     game = WordleGame()
@@ -127,6 +138,15 @@ def replay_prompt():
     return False
 
 
+def set_mode(game, mode):
+    if mode == 'normal':
+        return
+    elif mode == 'easy':
+        game.easy_mode()
+    elif mode == 'difficult':
+        game.difficult_mode()
+
+
 def import_word_list(source_list):
     """imports word list from source_list and stores it in a python list"""
     with open(source_list, 'r') as file:
@@ -142,18 +162,18 @@ def colorize_square(letter, color='white'):
 def generate_row(guess, answer):
     """Compare user's guess with the answer. Returns new board row"""
     row = []
-    guess_letters = [x for x in guess]
-    answer_letters = [x for x in answer]
+    guess_letters = list(guess)
+    answer_letters = list(answer)
     comparison = zip(guess_letters, answer_letters)
     for letter in comparison:
         if letter[0] == letter[1]:
-            row.append(colorize_square(letter[0].upper(), 'green')) # Where should I put .upper()?
+            row.append(colorize_square(letter[0], 'green')) # Where should I put .upper()?
 
         elif letter[0] != letter[1] and letter[0] in answer_letters:
-            row.append(colorize_square(letter[0].upper(), 'yellow'))
+            row.append(colorize_square(letter[0], 'yellow'))
 
         elif letter[0] not in answer_letters:
-            row.append(colorize_square(letter[0].upper()))
+            row.append(colorize_square(letter[0]))
 
     return row
 
@@ -164,15 +184,6 @@ def validate_user_guess(user_guess):
     elif user_guess not in possible_guesses:
         raise InvalidWordException
     return True
-
-
-def display_remaining_letters(user_guess, answer, letters_remaining):
-    for char in user_guess:
-        if char not in answer and char.upper() in letters_remaining:
-            letters_remaining.remove(f'{char.upper()}')
-    remaining_letters = ' '.join(letters_remaining)
-    num_of_letters_remaining = len(letters_remaining)
-    print(f'\nLetters Remaining ({num_of_letters_remaining}): {remaining_letters}')
 
 
 if __name__ == '__main__':
