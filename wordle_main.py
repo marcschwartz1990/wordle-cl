@@ -15,12 +15,11 @@ class InvalidWordException(Exception):
 
 
 class WordleGame:
-    # Default global variables, altered by 'mode' functions.
     squares = []
     rows = [None] * 6
     player_name = None
     guesses = 6
-    letters_remaining = set(sorted(string.ascii_lowercase))
+    letters_remaining = set(string.ascii_lowercase)
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
@@ -74,21 +73,23 @@ class WordleGame:
         for char in user_guess:
             if char not in answer and char in self.letters_remaining:
                 self.letters_remaining.remove(char)
-        return ' '.join(sorted(self.letters_remaining))
 
     def display_remaining_letters(self):
-        print(f'\nLetters Remaining ({len(self.letters_remaining)}): {self.letters_remaining}')
+        print(f'\nLetters Remaining ({len(self.letters_remaining)}): {" ".join(sorted(self.letters_remaining)).upper()}')
 
     def run_game(self):
         self.display_welcome_message()
         self.display_instructions()
-        self.player_name = input('Enter your name: ')
+        self.player_name = input('\nEnter your name: ')
+        print(f'\nGood luck, {self.player_name}!\n')
 
         answer = random.choice(possible_answers)
 
         for i in range(self.guesses):
+            self.display_board()
+            self.display_remaining_letters()
             while True:
-                guess = input('Enter a 5-letter word: ').lower()
+                guess = input('\nEnter a 5-letter word: ').lower()
                 try:
                     validate_user_guess(guess)
                     break
@@ -101,9 +102,7 @@ class WordleGame:
                 self.squares.append(letter)
 
             self.rows[i] = self.create_row()
-            self.display_board()
-            self.remaining_letters = self.adjust_remaining_letters(guess, answer)
-            self.display_remaining_letters()
+            self.adjust_remaining_letters(guess, answer)
             self.reset_squares()
 
             if guess == answer:
@@ -114,7 +113,7 @@ class WordleGame:
         else:
             print(
                 f'\nThe correct word was: {colored(answer.upper(), "green")}\n'
-                f'\nSorry, you failed to guess in 6 tries.'
+                f'\nSorry, you failed to guess in {self.guesses} tries.'
             )
         print('GAME OVER')
 
@@ -165,7 +164,6 @@ def generate_row(guess, answer):
 
         elif letter[0] not in answer_letters:
             row.append(colorize_square(letter[0]))
-
     return row
 
 
@@ -181,32 +179,3 @@ if __name__ == '__main__':
     possible_answers = import_word_list('wordle-answers-alphabetical.txt')
     possible_guesses = import_word_list('wordle-allowed-guesses.txt')
     main()
-
-# Move to new branch to work on mode feature:
-
-# def easy_mode(self):
-#     """Set number of allowed guesses to 8"""
-#     self.rows = [None] * 8
-#     self.guesses = 8
-#
-# def difficult_mode(self):
-#     """Set number of allowed guesses to 4"""
-#     self.rows = [None] * 4
-#     self.guesses = 4
-#
-# while True:
-#     modes = list(('easy', 'normal', 'difficult'))
-#     mode = input('Choose a mode (easy, normal, difficult): ').lower()
-#     if mode not in modes:
-#         continue
-#     else:
-#         break
-# set_mode(self, mode)
-
-# def set_mode(game, mode):
-#     if mode == 'normal':
-#         return
-#     elif mode == 'easy':
-#         game.easy_mode()
-#     elif mode == 'difficult':
-#         game.difficult_mode()
