@@ -36,12 +36,6 @@ class WordleGame:
         with open('wordle-stats.txt', 'a') as f:
             f.write(f'\n{self.player_name} played this game.')
 
-    def reset_squares(self):
-        self.squares = []
-
-    def reset_rows(self):
-        self.rows = [None] * 6
-
     def display_welcome_message(self):
         print('Welcome to Wordle CL!\n')
         time.sleep(2)
@@ -119,14 +113,12 @@ class WordleGame:
 
 
 def main():
-    game = WordleGame()
     while True:
+        game = WordleGame()
         game.run_game()
         game.record_stats()
         if replay_prompt() is False:
             break
-        game.reset_squares()
-        game.reset_rows()
     print('\n\nThank you for playing!\n')
 
 
