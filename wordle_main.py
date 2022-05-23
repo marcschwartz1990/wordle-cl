@@ -97,8 +97,7 @@ class WordleGame:
 
             self.rows[i] = self.create_row()
             self.adjust_remaining_letters(guess, answer)
-            self.reset_squares()
-
+            self.squares = []
             if guess == answer:
                 break
 
@@ -146,16 +145,15 @@ def generate_row(guess, answer):
     row = []
     guess_letters = list(guess)
     answer_letters = list(answer)
-    comparison = zip(guess_letters, answer_letters)
-    for letter in comparison:
-        if letter[0] == letter[1]:
-            row.append(colorize_square(letter[0], 'green')) # Where should I put .upper()?
+    for guess, answer in zip(guess_letters, answer_letters):
+        if guess == answer:
+            row.append(colorize_square(guess, 'green')) # Where should I put .upper()?
 
-        elif letter[0] != letter[1] and letter[0] in answer_letters:
-            row.append(colorize_square(letter[0], 'yellow'))
+        elif guess != answer and guess in answer_letters:
+            row.append(colorize_square(guess, 'yellow'))
 
-        elif letter[0] not in answer_letters:
-            row.append(colorize_square(letter[0]))
+        elif guess not in answer_letters:
+            row.append(colorize_square(guess))
     return row
 
 
