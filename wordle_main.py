@@ -15,11 +15,13 @@ class InvalidWordException(Exception):
 
 
 class WordleGame:
-    squares = []
-    rows = [None] * 6
-    player_name = None
-    guesses = 6
-    letters_remaining = set(string.ascii_lowercase)
+
+    def __init__(self):
+        self.squares = []
+        self.rows = [None] * 6
+        self.player_name = None
+        self.guesses = 6
+        self.letters_remaining = set(string.ascii_lowercase)
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
