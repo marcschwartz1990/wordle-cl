@@ -149,13 +149,13 @@ def generate_row(guess, answer):
     answer_letters = list(answer)
     for guess, answer in zip(guess_letters, answer_letters):
         if guess == answer:
-            row.append(colorize_square(guess, 'green')) # Where should I put .upper()?
+            row.append(colorize_square(guess.upper(), 'green'))
 
         elif guess != answer and guess in answer_letters:
-            row.append(colorize_square(guess, 'yellow'))
+            row.append(colorize_square(guess.upper(), 'yellow'))
 
         elif guess not in answer_letters:
-            row.append(colorize_square(guess))
+            row.append(colorize_square(guess.upper()))
     return row
 
 
