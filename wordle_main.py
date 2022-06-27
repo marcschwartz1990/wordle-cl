@@ -133,8 +133,7 @@ def colorize_square(letter, color='white'):
     return colored(f'[{letter}]', color)
 
 
-def generate_row(guess, answer):
-    """Compare user's guess with the answer. Returns new board row"""
+def generate_row(guess, answer):    """Compare user's guess with the answer. Returns new board row"""
     row = []
     guess_letters = list(guess)
     answer_letters = list(answer)
@@ -148,7 +147,6 @@ def generate_row(guess, answer):
         elif guess not in answer_letters:
             row.append(colorize_square(guess.upper()))
     return row
-
 
 def validate_user_guess(user_guess):
     if len(user_guess) != 5:
