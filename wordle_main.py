@@ -2,24 +2,17 @@ import random
 import string
 import time
 from termcolor import colored
-
-
-class GuessLengthException(Exception):
-    """Raise if len(guess) != 5."""
-    pass
-
-
-class InvalidWordException(Exception):
-    """Raises if word not in possible_guesses."""
-    pass
+from exceptions import *
 
 
 class WordleGame:
-    squares = []
-    rows = [None] * 6
-    player_name = None
-    guesses = 6
-    letters_remaining = set(string.ascii_lowercase)
+
+    def __init__(self):
+        self.squares = []
+        self.rows = [None] * 6
+        self.player_name = None
+        self.guesses = 6
+        self.letters_remaining = set(string.ascii_lowercase)
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
@@ -140,18 +133,20 @@ def colorize_square(letter, color='white'):
     return colored(f'[{letter}]', color)
 
 
-def generate_row(guess, answer):
-    """Compare user's guess with the answer. Returns new board row"""
+def generate_row(guess, answer):    """Compare user's guess with the answer. Returns new board row"""
     row = []
     guess_letters = list(guess)
     answer_letters = list(answer)
     for guess, answer in zip(guess_letters, answer_letters):
         if guess == answer:
-            row.append(colorize_square(guess, 'green')) # Where should I put .upper()?
+            row.append(colorize_square(guess.upper(), 'green'))
 
         elif guess != answer and guess in answer_letters:
-            row.append(colorize_square(guess, 'yellow'))
+            row.append(colorize_square(guess.upper(), 'yellow'))
 
+        elif guess not in answer_letters:
+            row.append(colorize_square(guess.upper()))
+    return row
 
 def validate_user_guess(user_guess):
     if len(user_guess) != 5:
