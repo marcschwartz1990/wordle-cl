@@ -152,10 +152,6 @@ def generate_row(guess, answer):
         elif guess != answer and guess in answer_letters:
             row.append(colorize_square(guess, 'yellow'))
 
-        elif guess not in answer_letters:
-            row.append(colorize_square(guess))
-    return row
-
 
 def validate_user_guess(user_guess):
     if len(user_guess) != 5:
