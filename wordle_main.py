@@ -133,7 +133,8 @@ def colorize_square(letter, color='white'):
     return colored(f'[{letter}]', color)
 
 
-def generate_row(guess, answer):    """Compare user's guess with the answer. Returns new board row"""
+def generate_row(guess, answer):
+    """Compare user's guess with the answer. Returns new board row"""
     row = []
     guess_letters = list(guess)
     answer_letters = list(answer)
