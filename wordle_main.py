@@ -25,10 +25,6 @@ class WordleGame:
             else:
                 print('[ ][ ][ ][ ][ ]')
 
-    def record_stats(self):
-        with open('wordle-stats.txt', 'a') as f:
-            f.write(f'\n{self.player_name} played this game.')
-
     def reset_squares(self):
         self.squares = []
 
