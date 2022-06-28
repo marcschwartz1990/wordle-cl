@@ -64,11 +64,31 @@ class WordleGame:
     def display_remaining_letters(self):
         print(f'\nLetters Remaining ({len(self.letters_remaining)}): {" ".join(sorted(self.letters_remaining)).upper()}')
 
+    def easy_mode(self):
+        """Set number of allowed guesses to 8"""
+        self.rows = [None] * 8
+        self.guesses = 8
+
+    def difficult_mode(self):
+        """Set number of allowed guesses to 4"""
+        self.rows = [None] * 4
+        self.guesses = 4
+
     def run_game(self):
         self.display_welcome_message()
         self.display_instructions()
+
         self.player_name = input('\nEnter your name: ')
         print(f'\nGood luck, {self.player_name}!\n')
+        while True:
+            modes = list(('easy', 'normal', 'difficult'))
+            mode = input('Choose a mode (easy, normal, difficult): ').lower()
+            if mode not in modes:
+                continue
+            else:
+                break
+        set_mode(self, mode)
+
 
         answer = random.choice(possible_answers)
 
@@ -111,11 +131,14 @@ def main():
         game.record_stats()
         if replay_prompt() is False:
             break
+        game.reset_squares()
+        game.reset_rows()
     print('\n\nThank you for playing!\n')
 
 
+
 def replay_prompt():
-    prompt = input('\nWould you like to play again? (y/n):').lower()
+    prompt = input('\nWould you like to play again? (y/n): ').lower()
     if prompt == 'y':
         return True
     return False
@@ -155,6 +178,15 @@ def validate_user_guess(user_guess):
     elif user_guess not in possible_guesses:
         raise InvalidWordException
     return True
+
+
+def set_mode(game, mode):
+    if mode == 'normal':
+        return
+    elif mode == 'easy':
+        game.easy_mode()
+    elif mode == 'difficult':
+        game.difficult_mode()
 
 
 if __name__ == '__main__':
