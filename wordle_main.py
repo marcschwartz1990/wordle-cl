@@ -1,8 +1,13 @@
 import random
 import string
 import time
+import sqlite3
 from termcolor import colored
 from exceptions import *
+from database import Database
+
+
+db = Database('players.db')
 
 
 class WordleGame:
@@ -49,12 +54,38 @@ class WordleGame:
         self.rows = [None] * 4
         self.guesses = 4
 
+    # DATABASE FUNCTIONS
+
+    def insert_player(self):
+        try:
+            db.cursor.execute("INSERT INTO players VALUES (:username, :games_played)",
+                              {'username': self.player_name, 'games_played': 0})
+            db.conn.commit()
+        except sqlite3.IntegrityError:
+            print('\nplayer already in database\n')
+
+    def increment_games_played(self):
+        db.cursor.execute(
+            """UPDATE players SET games_played = games_played + 1 
+            WHERE username = :username""",
+            {'username': self.player_name})
+        db.conn.commit()
+
     def run_game(self):
+        create_table_players = """CREATE TABLE players (
+                    username TEXT,
+                    games_played INTEGER,
+                    UNIQUE(username)
+                    )"""
+        db.execute_query(create_table_players)
+
         display_welcome_message()
         display_instructions()
 
-        self.player_name = input('\nEnter your name: ')
-        print(f'\nGood luck, {self.player_name}!\n')
+        self.player_name = input('\nEnter your username or "guest": ')
+        if self.player_name != 'guest':
+            self.insert_player()
+
         while True:
             modes = list(('easy', 'normal', 'difficult'))
             mode = input('Choose a mode (easy, normal, difficult): ').lower()
@@ -63,6 +94,7 @@ class WordleGame:
             else:
                 break
         set_mode(self, mode)
+        print(f'\nGood luck, {self.player_name}!\n')
 
         answer = random.choice(possible_answers)
 
@@ -97,12 +129,13 @@ class WordleGame:
             )
         print('GAME OVER')
 
+        self.increment_games_played()
+
 
 def main():
     while True:
         game = WordleGame()
         game.run_game()
-        game.record_stats()
         if replay_prompt() is False:
             break
         game.reset_squares()
