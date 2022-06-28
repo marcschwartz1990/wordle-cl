@@ -29,6 +29,12 @@ class WordleGame:
         with open('wordle-stats.txt', 'a') as f:
             f.write(f'\n{self.player_name} played this game.')
 
+    def reset_squares(self):
+        self.squares = []
+
+    def reset_rows(self):
+        self.rows = [None] * 6
+
     def display_welcome_message(self):
         print('Welcome to Wordle CL!\n')
         time.sleep(2)
@@ -88,7 +94,6 @@ class WordleGame:
             else:
                 break
         set_mode(self, mode)
-
 
         answer = random.choice(possible_answers)
 
