@@ -130,6 +130,7 @@ class WordleGame:
         print('GAME OVER')
 
         self.increment_games_played()
+        db.close()
 
 
 def main():
