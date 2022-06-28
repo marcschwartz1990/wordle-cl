@@ -102,7 +102,6 @@ def main():
     while True:
         game = WordleGame()
         game.run_game()
-        game.record_stats()
         if replay_prompt() is False:
             break
         game.reset_squares()
