@@ -2,25 +2,17 @@ import random
 import string
 import time
 from termcolor import colored
-
-
-class GuessLengthException(Exception):
-    """Raise if len(guess) != 5."""
-    pass
-
-
-class InvalidWordException(Exception):
-    """Raises if word not in possible_guesses."""
-    pass
+from exceptions import *
 
 
 class WordleGame:
-    # Default global variables, altered by 'mode' functions.
-    squares = []
-    rows = [None] * 6
-    player_name = None
-    guesses = 6
-    letters_remaining = set(sorted(string.ascii_lowercase))
+
+    def __init__(self):
+        self.squares = []
+        self.rows = [None] * 6
+        self.player_name = None
+        self.guesses = 6
+        self.letters_remaining = set(string.ascii_lowercase)
 
     def create_row(self):
         """Formats each letter from user's guess and returns a combined displayable row"""
@@ -36,12 +28,6 @@ class WordleGame:
     def record_stats(self):
         with open('wordle-stats.txt', 'a') as f:
             f.write(f'\n{self.player_name} played this game.')
-
-    def reset_squares(self):
-        self.squares = []
-
-    def reset_rows(self):
-        self.rows = [None] * 6
 
     def display_welcome_message(self):
         print('Welcome to Wordle CL!\n')
@@ -74,10 +60,9 @@ class WordleGame:
         for char in user_guess:
             if char not in answer and char in self.letters_remaining:
                 self.letters_remaining.remove(char)
-        return ' '.join(sorted(self.letters_remaining))
 
     def display_remaining_letters(self):
-        print(f'\nLetters Remaining ({len(self.letters_remaining)}): {self.letters_remaining}')
+        print(f'\nLetters Remaining ({len(self.letters_remaining)}): {" ".join(sorted(self.letters_remaining)).upper()}')
 
     def easy_mode(self):
         """Set number of allowed guesses to 8"""
@@ -92,7 +77,9 @@ class WordleGame:
     def run_game(self):
         self.display_welcome_message()
         self.display_instructions()
-        self.player_name = input('Enter your name: ')
+
+        self.player_name = input('\nEnter your name: ')
+        print(f'\nGood luck, {self.player_name}!\n')
         while True:
             modes = list(('easy', 'normal', 'difficult'))
             mode = input('Choose a mode (easy, normal, difficult): ').lower()
@@ -102,11 +89,14 @@ class WordleGame:
                 break
         set_mode(self, mode)
 
+
         answer = random.choice(possible_answers)
 
         for i in range(self.guesses):
+            self.display_board()
+            self.display_remaining_letters()
             while True:
-                guess = input('Enter a 5-letter word: ').lower()
+                guess = input('\nEnter a 5-letter word: ').lower()
                 try:
                     validate_user_guess(guess)
                     break
@@ -119,11 +109,8 @@ class WordleGame:
                 self.squares.append(letter)
 
             self.rows[i] = self.create_row()
-            self.display_board()
-            self.remaining_letters = self.adjust_remaining_letters(guess, answer)
-            self.display_remaining_letters()
-            self.reset_squares()
-
+            self.adjust_remaining_letters(guess, answer)
+            self.squares = []
             if guess == answer:
                 break
 
@@ -138,15 +125,16 @@ class WordleGame:
 
 
 def main():
-    game = WordleGame()
     while True:
+        game = WordleGame()
         game.run_game()
         game.record_stats()
         if replay_prompt() is False:
             break
         game.reset_squares()
         game.reset_rows()
-    print('\nThank you for playing!')
+    print('\n\nThank you for playing!\n')
+
 
 
 def replay_prompt():
@@ -173,19 +161,16 @@ def generate_row(guess, answer):
     row = []
     guess_letters = list(guess)
     answer_letters = list(answer)
-    comparison = zip(guess_letters, answer_letters)
-    for letter in comparison:
-        if letter[0] == letter[1]:
-            row.append(colorize_square(letter[0], 'green')) # Where should I put .upper()?
+    for guess, answer in zip(guess_letters, answer_letters):
+        if guess == answer:
+            row.append(colorize_square(guess.upper(), 'green'))
 
-        elif letter[0] != letter[1] and letter[0] in answer_letters:
-            row.append(colorize_square(letter[0], 'yellow'))
+        elif guess != answer and guess in answer_letters:
+            row.append(colorize_square(guess.upper(), 'yellow'))
 
-        elif letter[0] not in answer_letters:
-            row.append(colorize_square(letter[0]))
-
+        elif guess not in answer_letters:
+            row.append(colorize_square(guess.upper()))
     return row
-
 
 def validate_user_guess(user_guess):
     if len(user_guess) != 5:
