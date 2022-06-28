@@ -35,33 +35,6 @@ class WordleGame:
     def reset_rows(self):
         self.rows = [None] * 6
 
-    def display_welcome_message(self):
-        print('Welcome to Wordle CL!\n')
-        time.sleep(2)
-        print('Created by Marc Schwartz\n')
-        time.sleep(2)
-
-    def display_instructions(self):
-        green_w = colored('[W]', 'green')
-        yellow_i = colored('[I]', 'yellow')
-        print('INSTRUCTIONS:\n'
-              'Guess the WORDLE in 6 tries.\n'
-              'Each guess must be a valid 5-letter word.\n'
-              'After each guess, the board will display how close your guess was to the word.\n\n'
-              'EXAMPLES:\n'
-              f'{green_w}[E][A][R][Y]\n'
-              'The letter "W" is in the word in the correct spot.\n\n'
-              f'[P]{yellow_i}[L][L][S]\n'
-              'The letter "I" is in the word in the wrong spot.\n\n'
-              '[V][A][G][U][E]\n'
-              'No color means the letters are not in the word.\n')
-        while True:
-            next_step = input('Type "c" to continue: ')
-            if next_step == 'c':
-                break
-            else:
-                print('Invalid input.')
-
     def adjust_remaining_letters(self, user_guess, answer):
         for char in user_guess:
             if char not in answer and char in self.letters_remaining:
@@ -81,8 +54,8 @@ class WordleGame:
         self.guesses = 4
 
     def run_game(self):
-        self.display_welcome_message()
-        self.display_instructions()
+        display_welcome_message()
+        display_instructions()
 
         self.player_name = input('\nEnter your name: ')
         print(f'\nGood luck, {self.player_name}!\n')
@@ -141,6 +114,34 @@ def main():
     print('\n\nThank you for playing!\n')
 
 
+def display_welcome_message():
+    print('Welcome to Wordle CL!\n')
+    time.sleep(2)
+    print('Created by Marc Schwartz\n')
+    time.sleep(2)
+
+
+def display_instructions():
+    green_w = colored('[W]', 'green')
+    yellow_i = colored('[I]', 'yellow')
+    print('INSTRUCTIONS:\n'
+          'Guess the WORDLE in the given number of tries (based on mode).\n'
+          'Each guess must be a valid 5-letter word.\n'
+          'After each guess, the board will display how close your guess was to the word.\n\n'
+          'EXAMPLES:\n'
+          f'{green_w}[E][A][R][Y]\n'
+          'The letter "W" is in the word in the correct spot.\n\n'
+          f'[P]{yellow_i}[L][L][S]\n'
+          'The letter "I" is in the word in the wrong spot.\n\n'
+          '[V][A][G][U][E]\n'
+          'No color means the letters are not in the word.\n')
+    while True:
+        next_step = input('Type "c" to continue: ')
+        if next_step == 'c':
+            break
+        else:
+            print('Invalid input.')
+
 
 def replay_prompt():
     prompt = input('\nWould you like to play again? (y/n): ').lower()
@@ -176,6 +177,7 @@ def generate_row(guess, answer):
         elif guess not in answer_letters:
             row.append(colorize_square(guess.upper()))
     return row
+
 
 def validate_user_guess(user_guess):
     if len(user_guess) != 5:
